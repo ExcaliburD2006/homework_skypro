@@ -21,5 +21,4 @@ def get_mask_account(account: str) -> str:
         raise ValueError("Номер счета должен содержать только цифры")
     if len(account) < 4:
         raise ValueError("Номер счета должен содержать минимум 4 цифры")
-
     return f"**{account[-4:]}"
