@@ -1,21 +1,29 @@
-def filter_by_state(transactions: list[dict], state: str = "EXECUTED") -> list[dict]:
-    """
-    Фильтрует список словарей по значению ключа 'state'.
-
-    :param transactions: Список словарей для фильтрации.
-    :param state: Значение ключа 'state' для фильтрации (по умолчанию 'EXECUTED').
-    :return: Новый список словарей, где 'state' соответствует заданному значению.
-    """
-    return [transaction for transaction in transactions if transaction.get("state") == state]
+from datetime import datetime
+from typing import Dict, List
 
 
-def sort_by_date(transactions: list[dict], reverse: bool = True) -> list[dict]:
-    """
-    Сортирует список словарей по дате.
+def filter_by_state(operations: List[Dict], state: str = "EXECUTED") -> List[Dict]:
+    """Фильтрует операции по статусу с проверкой типа входных данных"""
+    if not isinstance(operations, list):
+        raise TypeError("Input must be a list of dictionaries")
 
-    :param transactions: Список словарей для сортировки.
-    :param reverse: Если True, сортировка по убыванию (по умолчанию)
-    Если False, по возрастанию.
-    :return: Новый список словарей, отсортированный по дате.
-    """
-    return sorted(transactions, key=lambda x: x["date"], reverse=reverse)
+    return [op for op in operations if op.get("state") == state]
+
+
+def sort_by_date(operations: List[Dict], reverse: bool = True) -> List[Dict]:
+    """Сортирует операции по дате с обработкой некорректных форматов"""
+    if not isinstance(operations, list):
+        raise TypeError("Input must be a list of dictionaries")
+
+    def get_sort_key(op: Dict) -> datetime:
+        date_str = op.get("date", "")
+        try:
+            return datetime.fromisoformat(date_str)
+        except (ValueError, TypeError):
+            return datetime.min if reverse else datetime.max
+
+    return sorted(
+        operations,
+        key=get_sort_key,
+        reverse=reverse
+    )
