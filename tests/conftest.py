@@ -20,3 +20,28 @@ def sample_data() -> List[Dict[str, Any]]:
         {"date": "2023-08-05T08:10:15.789"},
         {"state": "CANCELED", "date": "invalid-date"}
     ]
+@pytest.fixture
+def sample_transactions() -> List[Dict[str, Any]]:
+    return [
+        {
+            "operationAmount": {
+                "currency": {"code": "USD"},
+                "amount": "100.00"
+            },
+            "description": "Payment 1"
+        },
+        {
+            "operationAmount": {
+                "currency": {"code": "EUR"},
+                "amount": "200.00"
+            },
+            "description": "Payment 2"
+        },
+        {
+            "operationAmount": {
+                "currency": {"code": "USD"},
+                "amount": "300.00"
+            },
+            "description": "Payment 3"
+        }
+    ]
