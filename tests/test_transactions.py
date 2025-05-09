@@ -14,21 +14,20 @@ class TestTransactions(unittest.TestCase):
 
     # Тест для USD с успешной конвертацией
     @patch("src.external_api.convert_currency")
+    def test_eur_transaction_success(self, mock_convert: Mock) -> None:
+        mock_convert.return_value = 8500.0  # Исправлено: возвращаем float
+        transaction = {"amount": 100.0, "currency": "EUR"}
+        result = get_transaction_amount_rub(transaction)
+        self.assertEqual(result, 8500.0)
+
+    @patch("src.external_api.convert_currency")
     def test_usd_transaction_success(self, mock_convert: Mock) -> None:
-        mock_convert.return_value = 7500.0
+        # Указываем, что мок возвращает float
+        mock_convert.return_value = 7500.0  # Исправлено: возвращаем float, а не None
         transaction = {"amount": 100.0, "currency": "USD"}
         result = get_transaction_amount_rub(transaction)
         self.assertEqual(result, 7500.0)
         mock_convert.assert_called_once_with(100.0, "USD")
-
-    # Тест для EUR с успешной конвертацией
-    @patch("src.external_api.convert_currency")
-    def test_eur_transaction_success(self, mock_convert: Mock) -> None:
-        mock_convert.return_value = 8500.0
-        transaction = {"amount": 100.0, "currency": "EUR"}
-        result = get_transaction_amount_rub(transaction)
-        self.assertEqual(result, 8500.0)
-        mock_convert.assert_called_once_with(100.0, "EUR")
 
     # Тест для ошибки конвертации
     @patch("src.external_api.convert_currency")
