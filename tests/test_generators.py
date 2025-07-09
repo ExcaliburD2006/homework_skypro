@@ -70,8 +70,6 @@ def test_partial_transaction_data(sample_transactions: List[Dict[str, Any]]) -> 
     result = list(filter_by_currency(partial_data, "USD"))
     assert len(result) == 1
 
-def test_invalid_currency_code(sample_transactions: List[Dict[str, Any]]) -> None:
-    # Тест с некорректным кодом валюты
-    invalid_data = [{"operationAmount": {"currency": {"code": 123}}}]
+def test_invalid_currency_code() -> None:
     with pytest.raises(TypeError):
-        list(filter_by_currency(invalid_data, "USD"))
+        list(filter_by_currency([{"operationAmount": {"currency": {"code": 123}}}], "USD"))
