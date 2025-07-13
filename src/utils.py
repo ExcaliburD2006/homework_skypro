@@ -1,8 +1,24 @@
 import json
 import logging
+from pathlib import Path
 from typing import Any, Dict, List
 
+# Создаем отдельный логер для модуля
 logger = logging.getLogger("utils")
+
+# Настраиваем handler и formatter
+log_dir = Path("logs")
+log_dir.mkdir(exist_ok=True)
+log_file = log_dir / "utils.log"
+
+handler = logging.FileHandler(log_file, mode="w")
+handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter(fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+handler.setFormatter(formatter)
+
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 def load_transactions(file_path: str) -> List[Dict[str, Any]]:
