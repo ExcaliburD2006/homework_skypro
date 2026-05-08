@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+```
+.idea/
+```
+# Игнорировать файлы с конфиденциальными данными
+.env
+.env.local
