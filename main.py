@@ -11,9 +11,16 @@ from src.utils import load_transactions
 def main() -> None:
     # Пример использования
     try:
-        # Загрузка транзакций
-        transactions = load_transactions("data/operations.json")
-        print(f"Загружено {len(transactions)} транзакций")
+        # Загрузка транзакций из разных форматов (демонстрация новой функциональности)
+        formats = [
+            "data/operations.json",  # JSON
+            "data/transactions.csv",  # CSV
+            "data/transactions_excel.xlsx"  # Excel
+        ]
+
+        for file_path in formats:
+            transactions = load_transactions(file_path)
+            print(f"Загружено {len(transactions)} транзакций из {file_path}")
 
         # Маскировка карты
         card = "1234567890123456"

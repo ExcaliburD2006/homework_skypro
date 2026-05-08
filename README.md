@@ -112,3 +112,27 @@ pip install pytest pytest-cov
 
 ## Лицензия:
 Проект распространяется под [лицензией MIT](LICENSE).
+# Финансовый трекер
+
+Проект для управления финансовыми транзакциями.
+
+## Новая функциональность
+
+Теперь поддерживаются следующие форматы файлов:
+- **JSON** - исходный формат
+- **CSV** - табличные данные
+- **XLSX** - Excel файлы
+
+### Использование
+
+```python
+from utils import load_transactions
+
+# Загрузка из JSON
+transactions = load_transactions('data.json')
+
+# Загрузка из CSV  
+transactions = load_transactions('data.csv')
+
+# Загрузка из Excel
+transactions = load_transactions('data.xlsx')
