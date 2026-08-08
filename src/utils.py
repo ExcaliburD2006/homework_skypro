@@ -1,7 +1,7 @@
 import json
 import logging
 from typing import Any, Dict, List
-from file_reader import read_csv_file, read_excel_file
+from src.file_reader import read_csv_file, read_excel_file
 
 logger = logging.getLogger("utils")
 

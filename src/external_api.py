@@ -1,7 +1,7 @@
 from typing import Literal
 import requests
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # type: ignore[import-not-found]
 
 load_dotenv()
 
