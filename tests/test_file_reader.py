@@ -24,7 +24,7 @@ class TestFileReader:
         assert len(result) == 2
         assert result[0]['id'] == 1
         assert result[1]['amount'] == 200
-        mock_read_csv.assert_called_once_with('test.csv')
+        mock_read_csv.assert_called_once_with('test.csv', delimiter=";")
 
     @patch('pandas.read_csv')
     def test_read_csv_file_empty(self, mock_read_csv):

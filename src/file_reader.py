@@ -17,7 +17,7 @@ def read_csv_file(file_path: str) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: Список словарей с транзакциями
     """
     try:
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, delimiter=";")
         transactions = cast(List[Dict[str, Any]], df.to_dict("records"))
         logger.info(f"Успешно загружено {len(transactions)} транзакций из CSV файла: {file_path}")
         return transactions

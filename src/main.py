@@ -12,21 +12,30 @@ FILE_OPTIONS: Dict[str, Tuple[str, str]] = {
 }
 
 
-def print_program(message: str) -> None:
-    """Выводит сообщение программы с префиксом."""
-    print(f"Программа: {message}")
+def get_currency_code(operation: Dict[str, Any]) -> str:
+    """Возвращает код валюты операции для JSON, CSV и Excel форматов."""
+    if "currency_code" in operation:
+        return str(operation.get("currency_code", "")).upper()
+    code = (
+        operation.get("operationAmount", {})
+        .get("currency", {})
+        .get("code", "")
+    )
+    return str(code).upper()
 
 
-def read_user_input() -> str:
-    """Считывает ввод пользователя."""
-    return input("\nПользователь: ").strip()
+def get_amount(operation: Dict[str, Any]) -> str:
+    """Возвращает сумму операции для JSON, CSV и Excel форматов."""
+    if "amount" in operation and "operationAmount" not in operation:
+        return str(operation.get("amount", "0"))
+    return str(operation.get("operationAmount", {}).get("amount", "0"))
 
 
 def ask_yes_no(question: str) -> bool:
     """Запрашивает у пользователя ответ Да/Нет."""
     while True:
-        print_program(f"{question} Да/Нет")
-        answer = read_user_input().lower()
+        print(f"Программа: {question} Да/Нет")
+        answer = input("\nПользователь: ").strip().lower()
         if answer == "да":
             return True
         if answer == "нет":
@@ -36,21 +45,21 @@ def ask_yes_no(question: str) -> bool:
 def get_valid_status() -> str:
     """Запрашивает и возвращает корректный статус операции."""
     while True:
-        print_program(
-            "Введите статус, по которому необходимо выполнить фильтрацию. \n"
+        print(
+            "Программа: Введите статус, по которому необходимо выполнить фильтрацию. \n"
             "Доступные для фильтровки статусы: EXECUTED, CANCELED, PENDING"
         )
-        status_input = read_user_input()
+        status_input = input("\nПользователь: ").strip()
         normalized_status = status_input.upper()
         if normalized_status in VALID_STATUSES:
             return normalized_status
-        print_program(f'Статус операции "{status_input}" недоступен.')
+        print(f'Программа: Статус операции "{status_input}" недоступен.')
 
 
 def choose_file_format() -> Tuple[str, str]:
     """Запрашивает у пользователя формат файла с транзакциями."""
-    print_program(
-        "Привет! Добро пожаловать в программу работы \n"
+    print(
+        "Программа: Привет! Добро пожаловать в программу работы \n"
         "с банковскими транзакциями. \n"
         "Выберите необходимый пункт меню:\n"
         "1. Получить информацию о транзакциях из JSON-файла\n"
@@ -58,19 +67,19 @@ def choose_file_format() -> Tuple[str, str]:
         "3. Получить информацию о транзакциях из XLSX-файла"
     )
     while True:
-        choice = read_user_input()
+        choice = input("\nПользователь: ").strip()
         if choice in FILE_OPTIONS:
             file_path, file_format = FILE_OPTIONS[choice]
-            print_program(f"Для обработки выбран {file_format}-файл.")
+            print(f"Программа: Для обработки выбран {file_format}-файл.")
             return file_path, file_format
-        print_program("Неверный пункт меню. Выберите 1, 2 или 3.")
+        print("Программа: Неверный пункт меню. Выберите 1, 2 или 3.")
 
 
 def get_sort_direction() -> bool:
     """Запрашивает направление сортировки. True — по убыванию, False — по возрастанию."""
     while True:
-        print_program("Отсортировать по возрастанию или по убыванию?")
-        direction = read_user_input().lower()
+        print("Программа: Отсортировать по возрастанию или по убыванию?")
+        direction = input("\nПользователь: ").strip().lower()
         if direction == "по возрастанию":
             return False
         if direction == "по убыванию":
@@ -79,30 +88,18 @@ def get_sort_direction() -> bool:
 
 def filter_rub_transactions(operations: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Оставляет только операции в рублях."""
-    rub_operations: List[Dict[str, Any]] = []
-    for operation in operations:
-        currency_code = (
-            operation.get("operationAmount", {})
-            .get("currency", {})
-            .get("code", "")
-            .upper()
-        )
-        if currency_code == "RUB":
-            rub_operations.append(operation)
-    return rub_operations
+    return [operation for operation in operations if get_currency_code(operation) == "RUB"]
 
 
 def format_amount(operation: Dict[str, Any]) -> str:
     """Форматирует сумму операции для вывода в консоль."""
-    amount_data = operation.get("operationAmount", {})
-    amount = amount_data.get("amount", "0")
-    currency_code = amount_data.get("currency", {}).get("code", "RUB")
+    amount_value = float(get_amount(operation))
+    currency_code = get_currency_code(operation)
 
-    amount_value = float(amount)
     if amount_value.is_integer():
         amount_text = str(int(amount_value))
     else:
-        amount_text = str(amount)
+        amount_text = str(amount_value)
 
     if currency_code == "RUB":
         return f"{amount_text} руб."
@@ -126,13 +123,13 @@ def format_accounts(operation: Dict[str, Any]) -> Optional[str]:
 def print_transactions(operations: List[Dict[str, Any]]) -> None:
     """Печатает список транзакций в требуемом формате."""
     if not operations:
-        print_program(
-            "Не найдено ни одной транзакции, подходящей под ваши\n"
+        print(
+            "Программа: Не найдено ни одной транзакции, подходящей под ваши\n"
             "условия фильтрации"
         )
         return
 
-    print_program("Распечатываю итоговый список транзакций...\n")
+    print("Программа: Распечатываю итоговый список транзакций...\n")
     print("Программа:")
     print(f"Всего банковских операций в выборке: {len(operations)}\n")
 
@@ -155,7 +152,7 @@ def main() -> None:
     transactions = load_transactions(file_path)
 
     status = get_valid_status()
-    print_program(f'Операции отфильтрованы по статусу "{status}"')
+    print(f'Программа: Операции отфильтрованы по статусу "{status}"')
 
     filtered_transactions = filter_by_state(transactions, status)
 
@@ -167,8 +164,8 @@ def main() -> None:
         filtered_transactions = filter_rub_transactions(filtered_transactions)
 
     if ask_yes_no("Отфильтровать список транзакций по определенному слову \nв описании?"):
-        print_program("Введите слово для поиска в описании операции.")
-        search_word = read_user_input()
+        print("Программа: Введите слово для поиска в описании операции.")
+        search_word = input("\nПользователь: ").strip()
         filtered_transactions = process_bank_search(filtered_transactions, search_word)
 
     print_transactions(filtered_transactions)
