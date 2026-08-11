@@ -2,8 +2,15 @@ from typing import Iterator, List
 
 
 def filter_by_currency(transactions: List[dict], currency: str) -> Iterator[dict]:
-    """Фильтрует транзакции по заданной валюте и возвращает итератор"""
-    return filter(lambda x: x["operationAmount"]["currency"]["code"] == currency, transactions)
+    """Фильтрует транзакции по заданной валюте и возвращает итератор."""
+
+    def matches(transaction: dict) -> bool:
+        code = transaction["operationAmount"]["currency"]["code"]
+        if not isinstance(code, str):
+            raise TypeError("Currency code must be a string")
+        return code == currency
+
+    return filter(matches, transactions)
 
 
 # Пример использования
@@ -54,7 +61,10 @@ for _ in range(5):
 
 
 def card_number_generator(start: int, end: int) -> Iterator[str]:
-    """Генератор номеров карт в формате XXXX XXXX XXXX XXXX"""
+    """Генератор номеров карт в формате XXXX XXXX XXXX XXXX."""
+    if start > end:
+        raise ValueError("Start must be less than or equal to end")
+
     for num in range(start, end + 1):
         # Преобразуем число в 16-значную строку с ведущими нулями
         full_number = str(num).zfill(16)
