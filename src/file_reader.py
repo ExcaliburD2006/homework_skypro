@@ -1,6 +1,7 @@
-import pandas as pd
-from typing import List, Dict, Any
 import logging
+from typing import Any, Dict, List, cast
+
+import pandas as pd  # type: ignore[import-untyped]
 
 logger = logging.getLogger("file_reader")
 
@@ -16,8 +17,8 @@ def read_csv_file(file_path: str) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: Список словарей с транзакциями
     """
     try:
-        df = pd.read_csv(file_path)
-        transactions = df.to_dict("records")
+        df = pd.read_csv(file_path, delimiter=";")
+        transactions = cast(List[Dict[str, Any]], df.to_dict("records"))
         logger.info(f"Успешно загружено {len(transactions)} транзакций из CSV файла: {file_path}")
         return transactions
     except FileNotFoundError:
@@ -43,7 +44,7 @@ def read_excel_file(file_path: str) -> List[Dict[str, Any]]:
     """
     try:
         df = pd.read_excel(file_path)
-        transactions = df.to_dict("records")
+        transactions = cast(List[Dict[str, Any]], df.to_dict("records"))
         logger.info(f"Успешно загружено {len(transactions)} транзакций из Excel файла: {file_path}")
         return transactions
     except FileNotFoundError:

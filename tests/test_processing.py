@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Type
 import pytest
 from pytest import raises
 
-from src.processing import filter_by_state, sort_by_date
+from src.processing import filter_by_state, process_bank_operations, process_bank_search, sort_by_date
 
 
 @pytest.fixture
@@ -87,3 +87,44 @@ def test_sort_by_date_invalid_input() -> None:
     """Тестирует обработку невалидного ввода при сортировке."""
     with raises(TypeError):
         sort_by_date("not-a-list")  # type: ignore
+
+
+def test_process_bank_search(sample_data: List[Dict[str, Any]]) -> None:
+    """Тестирует поиск операций по описанию с помощью регулярных выражений."""
+    data = [
+        *sample_data,
+        {"state": "EXECUTED", "date": "2023-10-01T00:00:00.000", "description": "Перевод организации"},
+        {"state": "EXECUTED", "date": "2023-10-02T00:00:00.000", "description": "Открытие вклада"},
+    ]
+    result = process_bank_search(data, "перевод")
+    assert len(result) == 1
+    assert result[0]["description"] == "Перевод организации"
+
+
+def test_process_bank_search_invalid_input() -> None:
+    """Тестирует обработку невалидного ввода при поиске."""
+    with raises(TypeError):
+        process_bank_search("not-a-list", "test")  # type: ignore
+
+
+def test_process_bank_operations() -> None:
+    """Тестирует подсчет операций по категориям."""
+    data = [
+        {"description": "Перевод организации"},
+        {"description": "Перевод организации"},
+        {"description": "Открытие вклада"},
+        {"description": "Перевод с карты на карту"},
+    ]
+    categories = ["Перевод организации", "Открытие вклада", "Перевод с карты на карту"]
+    result = process_bank_operations(data, categories)
+    assert result == {
+        "Перевод организации": 2,
+        "Открытие вклада": 1,
+        "Перевод с карты на карту": 1,
+    }
+
+
+def test_process_bank_operations_invalid_input() -> None:
+    """Тестирует обработку невалидного ввода при подсчете категорий."""
+    with raises(TypeError):
+        process_bank_operations("not-a-list", ["test"])  # type: ignore
